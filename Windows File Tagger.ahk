@@ -18,4 +18,13 @@ F1::
 		MsgBox, 48, File Tagger, Windows Explorer is open and in focus, but no files are selected.
 	else
 		MsgBox, 64, File Tagger Results, Paths`n`n%sel%
+		
+		
+		
+; Rename a file loop
+FileMove, C:\File Before.txt, C:\File After.txt  
+
+
 return
+
+
