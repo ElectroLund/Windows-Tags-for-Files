@@ -1,6 +1,7 @@
 /*
 	File: "WTF.ahk"
 	Author: Rob Lund
+	Site: http://www.electrolund.com/2015/11/the-lack-of-file-tags-in-windows/
 	License: freely distributable
 	
 	Description:
@@ -16,6 +17,7 @@
 		Icon created with Paint.net.  Photoshop compatible design file included.
 
 	References:
+		Uses the following Explorer AHK library...
 		http://autohotkey.com/board/topic/60985-get-paths-of-selected-items-in-an-explorer-window/		
 
 	Notes:	
@@ -27,19 +29,22 @@
 #SingleInstance	force 
 #include explorer window info.ahk
 
-global script_version := 2.0
+script_version := 2.0
 global script_debug := FALSE
+global script_warn := FALSE
 script_title = Windows Tags for Files
 script_title_short = WTF	; acroynms make the world go round
 
-if (script_debug = FALSE)
+; compiled version has custom tray icon and menus
+if A_IsCompiled
 {
-	; customize the tray icon & menus
-	Menu, Tray, Icon, %A_ScriptDir%\wtf.ico
+	Menu, Tray, Icon, %A_ScriptFullPath%, -159
 	Menu, Tray, Tip, %script_title%
 	Menu, Tray, NoStandard
 	Menu, Tray, Add, Edit Preferences, MenuEdit
 	Menu, Tray, Disable, Edit Preferences
+	Menu, Tray, Add, Warn Before Tagging?, MenuWarning
+	Menu, Tray, Add, Debug Mode, MenuDebug
 	Menu, Tray, Add,		; separater line
 	Menu, Tray, Add, Exit, QuitScriptSub
 }
@@ -225,6 +230,12 @@ Tagger(tagType)
 			MsgBox, 64, (DEBUG) New Name, %newPath%
 		}
 		
+		; warn before renaming
+		if script_warn
+		MsgBox, 0x24, %script_title_short%, About to rename files. Proceed?
+		IfMsgBox No
+			Return
+		
 		; now rename
 		FileMove, %oldPath%, %newPath%
 		
@@ -243,6 +254,26 @@ MenuEdit:
 
 if script_debug
 	MsgBox You selected %A_ThisMenuItem% from menu %A_ThisMenu%.
+
+Return
+
+MenuDebug:
+
+Menu, Tray, ToggleCheck, Debug Mode
+if script_debug
+	script_debug := FALSE
+else
+	script_debug := TRUE
+
+Return
+
+MenuWarning:
+
+Menu, Tray, ToggleCheck, Warn Before Tagging?
+if script_warn
+	script_warn := FALSE
+else
+	script_warn := TRUE
 
 Return
 
